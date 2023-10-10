@@ -127,7 +127,7 @@ class RenderPreProcessorHook
             // search settings for less file
             foreach ($GLOBALS['TSFE']->pSetup['includeCSS.'] as $key => $subconf) {
 
-                if (\is_string($GLOBALS['TSFE']->pSetup['includeCSS.'][$key]) && $filePathSanitizer->sanitize($GLOBALS['TSFE']->pSetup['includeCSS.'][$key]) === $file) {
+                if (\is_string($subconf) && !empty($subconf) && $subconf === $file) {
                     $outputDir = isset($GLOBALS['TSFE']->pSetup['includeCSS.'][$key . '.']['outputdir']) ? trim($GLOBALS['TSFE']->pSetup['includeCSS.'][$key . '.']['outputdir']) : $outputDir;
                     if (isset($GLOBALS['TSFE']->pSetup['includeCSS.'][$key . '.']['doNotHash']) && $GLOBALS['TSFE']->pSetup['includeCSS.'][$key . '.']['doNotHash'] == 1) {
                         $doNotHash = true;
@@ -135,7 +135,7 @@ class RenderPreProcessorHook
                     $outputFile = isset($GLOBALS['TSFE']->pSetup['includeCSS.'][$key . '.']['outputfile']) ? trim($GLOBALS['TSFE']->pSetup['includeCSS.'][$key . '.']['outputfile']) : null;
                 }
             }
-            if ($outputFile !== null) {
+            if (!empty($outputFile)) {
                 $outputDir = \dirname($outputFile);
                 $filename = basename($outputFile);
             }
@@ -157,8 +157,8 @@ class RenderPreProcessorHook
             // create filename - hash is important due to the possible
             // conflicts with same filename in different folder
             GeneralUtility::mkdir_deep($sitePath . $outputDir);
-            $cssRelativeFilename = $outputDir . $filename . (($outputDir === $defaultOutputDir && $outputFile === '') ? '_' . hash('sha1',
-                        $file) : (\count($this->variables) > 0 && $outputFile === '' ? '_' . $variablesHash : '')) . '.css';
+            $cssRelativeFilename = $outputDir . $filename . (($outputDir === $defaultOutputDir && empty($outputFile)) ? '_' . hash('sha1',
+                        $file) : (\count($this->variables) > 0 && empty($outputFile) ? '_' . $variablesHash : '')) . '.css';
             if ($doNotHash) {
                 $cssRelativeFilename = $outputDir . $filename.'.css';
             }
